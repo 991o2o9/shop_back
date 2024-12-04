@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/db");
 const bodyParser = require("body-parser");
+const cors = require("cors"); // Подключаем cors
 
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
@@ -13,6 +14,9 @@ connectDB();
 
 // Middleware
 app.use(bodyParser.json());
+
+// Настройка CORS
+app.use(cors({ origin: "*" }));
 
 // Routes
 app.use("/api", productRoutes);
