@@ -26,7 +26,9 @@ router.post("/products", async (req, res) => {
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (err) {
-    res.status(500).json({ message: "Error creating product: " + err.message });
+    res
+      .status(500)
+      .json({ message: "Ошибка при создании товара: " + err.message });
   }
 });
 
@@ -38,7 +40,7 @@ router.get("/products", async (req, res) => {
   } catch (err) {
     res
       .status(500)
-      .json({ message: "Error fetching products: " + err.message });
+      .json({ message: "Ошибка при получении товаров: " + err.message });
   }
 });
 
@@ -51,11 +53,13 @@ router.put("/products/:id", async (req, res) => {
       { new: true }
     );
     if (!updatedProduct) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Товар не найден" });
     }
     res.status(200).json(updatedProduct);
   } catch (err) {
-    res.status(500).json({ message: "Error updating product: " + err.message });
+    res
+      .status(500)
+      .json({ message: "Ошибка при обновлении товара: " + err.message });
   }
 });
 
@@ -64,13 +68,13 @@ router.delete("/products/:id", async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
     if (!deletedProduct) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Товар не найден" });
     }
-    res
-      .status(200)
-      .json({ message: "Product deleted", product: deletedProduct });
+    res.status(200).json({ message: "Товар удалён", product: deletedProduct });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting product: " + err.message });
+    res
+      .status(500)
+      .json({ message: "Ошибка при удалении товара: " + err.message });
   }
 });
 

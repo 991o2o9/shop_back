@@ -1,4 +1,5 @@
 const express = require("express");
+const moment = require("moment-timezone");
 const router = express.Router();
 const Order = require("../models/Order");
 
@@ -7,17 +8,21 @@ router.post("/orders", async (req, res) => {
     const { phone, orders, totalPrice } = req.body;
 
     if (!Array.isArray(orders)) {
-      return res.status(400).json({ message: "Invalid orders format" });
+      return res.status(400).json({ message: "Неверный формат заказов" });
     }
 
     if (totalPrice === undefined) {
-      return res.status(400).json({ message: "Total price is required" });
+      return res
+        .status(400)
+        .json({ message: "Общая сумма заказа обязательна" });
     }
+
+    const orderTime = moment().tz("Asia/Bishkek").format("DD/MM/YYYY HH:mm");
 
     const newOrders = orders.map((order) => {
       if (!order.title || !order.description || !order.price || !order.img) {
         throw new Error(
-          "All order items must include title, description, price, and img"
+          "Все элементы заказа должны содержать название, описание, цену и изображение"
         );
       }
 
@@ -36,11 +41,12 @@ router.post("/orders", async (req, res) => {
 
     res.status(201).json({
       phone,
+      orderTime,
       orders: savedOrders,
       totalPrice,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Произошла ошибка при обработке заказа" });
   }
 });
 
@@ -52,6 +58,7 @@ router.get("/orders", async (req, res) => {
       if (!acc[order.phone]) {
         acc[order.phone] = {
           phone: order.phone,
+          orderTime: moment().tz("Asia/Bishkek").format("DD/MM/YYYY HH:mm"),
           orders: [],
           totalPrice: 0,
         };
@@ -74,7 +81,7 @@ router.get("/orders", async (req, res) => {
 
     res.status(200).json(result);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Произошла ошибка при получении заказов" });
   }
 });
 
